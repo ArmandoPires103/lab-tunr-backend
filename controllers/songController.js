@@ -1,8 +1,8 @@
 const express = require("express");
 
 const songs = express.Router();
-const { getAllSongs } = require("../queries/songs")
-
+const { getAllSongs, getSong, createSong} = require("../queries/songs")
+const { checkName, checkBoolean } = require("../validations/checkSongs")
 songs.get("/", async (req, res) => {
   
     const allSongs = await getAllSongs();
@@ -14,15 +14,26 @@ songs.get("/", async (req, res) => {
 });
 
 
-songs.get("/:id", (req, res) => {
-  const { id } = req.params;
+// SHOW
+songs.get('/:id', async (req, res) => {
+  const { id } = req.params
+  const song = await getSong(id)
+  if (song) {
+    res.json(song)
+  } else {
+    res.status(404).json({ error: 'not found' })
+  }
+})
 
-  res.json({ message: `Get by id:${id} router` });
-});
-
-songs.post("/", (req, res) => {
-  res.json({ message: "Post route" });
-});
+// CREATE
+songs.post("/", checkBoolean, checkName, async (req, res) => {
+  try {
+    const song = await createSong(req.body)
+    res.json(song)
+  } catch (error) {
+    res.status(400).json({ error: error })
+  }
+})
 
 songs.put("/:id", (req, res) => {
   const { id } = req.params;
