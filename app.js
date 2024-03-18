@@ -8,7 +8,7 @@ const songsController = require("./controllers/songController")
 app.use(cors());
 app.use(express.json());
 
-app.use("/songs", songsController);
+app.use("/api/songs", songsController);
 
 // ROUTES
 app.get("/", (req, res) => {
